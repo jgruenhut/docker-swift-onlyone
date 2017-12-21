@@ -68,24 +68,19 @@ fi
 echo "Starting supervisord..."
 /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
 
-# NOTE. Swift example with auth 2.0:
-# swift --os-auth-url https://api.example.com:5000/v2.0 \
-#       --os-tenant-name tenant \
-#       --os-username user --os-password password list
-
 # Create default container
 if [ ! -z "${SWIFT_DEFAULT_CONTAINER}" ]; then
 	echo "Creating default container..."
 	for container in ${SWIFT_DEFAULT_CONTAINER} ; do
 	    echo "Creating container...${container}"
-	    swift --os-auth-url http://localhost:8080/auth/v2.0 --os-username admin --os-password admin --os-tenant-name tenant post ${container}
+	    swift -A http://localhost:8080/auth/v1.0 -U admin:admin -K admin post ${container}
 	done
 fi
 
 # Create meta-url-key to allow temp download url generation
 if [ ! -z "${SWIFT_TEMP_URL_KEY}" ]; then
   echo "Setting X-Account-Meta-Temp-URL-Key..."
-  swift --os-auth-url http://localhost:8080/auth/v2.0 --os-username test  --os-password tester --os-tenant-name tenant post -m "Temp-URL-Key:${SWIFT_TEMP_URL_KEY}"
+  swift -A http://localhost:8080/auth/v1.0 -U test:tester -K testing post -m "Temp-URL-Key:${SWIFT_TEMP_URL_KEY}"
 fi
 
 #
